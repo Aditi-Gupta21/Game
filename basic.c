@@ -10,31 +10,37 @@ char board[3][3];
 char currentPlayer = 'X';
 
 int main() {
-    int row, col, moves = 0;
+    int move, row, col, moves = 0;
     int winner = 0;
 
     resetBoard();
 
     while (1) {
         drawBoard();
-        printf("Player %c, enter your move (row and column: 1-3): ", currentPlayer);
-        scanf("%d %d", &row, &col);
+        printf("Player %c, enter your move (1-9): ", currentPlayer);
+        scanf("%d", &move);
 
-        // Adjust for 0-based index
-        row--;
-        col--;
+        // Validate move number
+        if (move < 1 || move > 9) {
+            printf("Invalid move. Choose a number between 1 and 9.\n");
+            continue;
+        }
 
-        // Validate move
-        if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != ' ') {
-            printf("Invalid move. Try again.\n");
+        // Convert move (1–9) to row & column
+        row = (move - 1) / 3;
+        col = (move - 1) % 3;
+
+        // Check if cell is empty
+        if (board[row][col] != ' ') {
+            printf("Cell already taken. Try again.\n");
             continue;
         }
 
         board[row][col] = currentPlayer;
         moves++;
 
-        winner = checkWin();
-        if (winner == 1) {
+        // Check for winner
+        if (checkWin()) {
             drawBoard();
             printf("Player %c wins! 🎉\n", currentPlayer);
             break;
@@ -58,18 +64,21 @@ void resetBoard() {
             board[i][j] = ' ';
 }
 
-// Display the board
+// Display the board with numbering (1–9)
 void drawBoard() {
     printf("\n");
-    printf("  1   2   3\n");
+    int num = 1;
     for (int i = 0; i < 3; i++) {
-        printf("%d ", i + 1);
         for (int j = 0; j < 3; j++) {
-            printf(" %c ", board[i][j]);
+            if (board[i][j] == ' ')
+                printf(" %d ", num);
+            else
+                printf(" %c ", board[i][j]);
             if (j < 2) printf("|");
+            num++;
         }
         printf("\n");
-        if (i < 2) printf("  ---+---+---\n");
+        if (i < 2) printf("---+---+---\n");
     }
     printf("\n");
 }
